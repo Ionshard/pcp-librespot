@@ -1,0 +1,53 @@
+#!/bin/sh
+
+PNAME="Librespot"
+DESC="Librespot player"
+TCEMNT="/mnt/$(readlink /etc/sysconfig/tcedir | cut -d '/' -f3)"
+PIDFILE=/var/run/librespot/librespot.pid
+
+# Set DAEMON to the actual binary
+[ -f $TCEMNT/tce/librespot ] && DAEMON=`readlink $TCEMNT/tce/librespot` || DAEMON="/usr/local/bin/librespot"
+
+# Read from config file
+. /usr/local/etc/pcp/pcp.cfg
+
+case "$1" in
+  start)
+      echo "Starting $DESC..."
+      if [ -e $PIDFILE ]; then
+          rm $PIDFILE
+      fi
+
+      start-stop-daemon --start --quiet --exec $DAEMON \
+        -- -n $NAME -b 160 --cache /tmp --initial-volume 20 --backend alsa --device $OUTPUT --volume-range 30 --quiet > /tmp/librespot.log 2>&1 &
+  ;;
+  stop)
+      echo "Stopping $DESC..."
+      start-stop-daemon --stop --quiet --exec $DAEMON
+  ;;
+  restart)
+      echo "Restarting $DESC..."
+      $0 stop
+      sleep 1
+      $0 start
+  ;;
+  status)
+      # Check if librespot daemon is running
+      PID=$(busybox ps -ef | grep $DAEMON | grep -v grep | awk '{ print $1 }')
+      if [ 0$PID -gt 0 ]; then
+          echo "$PNAME is running."
+          exit 0
+      else
+          echo "$PNAME not running."
+          exit 1
+      fi
+  ;;
+	*)
+      echo
+      echo -e "Usage: $0 [start|stop|restart|status]"
+      echo
+      exit 1
+    ;;
+esac
+
+exit 0

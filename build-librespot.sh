@@ -49,7 +49,7 @@ packages() {
 	fi
 
 	echo "Build Librespot binary..."
-	cargo build --jobs "$(nproc)" --profile release --target "$BUILD_TARGET" --no-default-features --features "with-libmdns,alsa-backend"
+	cargo build --jobs "$(nproc)" --profile release --target "$BUILD_TARGET" --no-default-features --features "rustls-tls-webpki-roots,with-libmdns,alsa-backend"
 
   mkdir -p "${TARGET_DIR}/usr/local/bin/"
 	cp "../${BUILD_TARGET}/release/librespot" "${TARGET_DIR}/usr/local/bin/"

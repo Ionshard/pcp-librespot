@@ -19,7 +19,7 @@ case "$1" in
       fi
 
       start-stop-daemon --start --quiet --exec $DAEMON \
-        -- -n $NAME -b 160 --cache /tmp --initial-volume 20 --backend alsa --device $OUTPUT --volume-range 30 --quiet > /tmp/librespot.log 2>&1 &
+        -- -n "$NAME" -b 160 --cache /tmp --initial-volume 20 --backend alsa --device $OUTPUT --volume-range 30 --quiet > /tmp/librespot.log 2>&1 &
   ;;
   stop)
       echo "Stopping $DESC..."
